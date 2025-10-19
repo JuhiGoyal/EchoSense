@@ -1,0 +1,175 @@
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap'); /* A nice handwritten font for the diary */
+
+/* --- Color Palette --- */
+:root {
+    --primary-blue: #3b82f6;
+    --primary-blue-hover: #2563eb;
+    --paper-bg: #fdfdf8; /* Off-white paper color */
+    --text-dark: #2d3748;
+    --text-light: #5a6472;
+    --spiral-color: #c0c0c0; /* Silver color for spiral */
+    --desk-bg: #f4f1ea; /* A soft, warm background */
+}
+
+/* --- Basic Reset & Body Styling --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--desk-bg);
+    padding: 20px;
+}
+
+/* --- Main Notebook Container --- */
+.notebook-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 80vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns for two pages */
+    gap: 40px; /* This gap is for the spiral */
+    position: relative;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+/* --- The Spiral Binding Effect --- */
+.notebook-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 100%;
+    /* Creates the illusion of punched holes */
+    background-image: radial-gradient(circle at center, transparent 7px, var(--paper-bg) 7px, var(--paper-bg) 9px, transparent 9px);
+    background-size: 20px 30px;
+    background-position: 10px 15px;
+    z-index: 10;
+}
+.notebook-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    /* Creates the metal wire of the spiral */
+    background: linear-gradient(to bottom, var(--spiral-color), #fff, var(--spiral-color));
+    z-index: 11;
+}
+
+/* --- Styling for Both "Pages" --- */
+#diary-section, #chat-section {
+    background-color: var(--paper-bg);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+}
+#diary-section {
+    padding-left: 50px; /* Extra padding to not write over the spiral */
+}
+#chat-section {
+    padding-right: 50px;
+}
+
+/* --- Header and Back Button --- */
+header {
+    position: absolute;
+    top: -60px; /* Position it above the notebook */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+}
+header button {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+header button:hover {
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* --- Diary Section Specifics --- */
+#diary-section h2 {
+    margin-bottom: 15px;
+    color: var(--text-dark);
+}
+#diary-input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: 'Caveat', cursive; /* Handwritten font */
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: #333;
+}
+#diary-input:focus {
+    outline: none;
+}
+.controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+.controls button {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+#save-diary {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+/* --- Chat Section Specifics --- */
+#chat-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding-right: 10px; /* for scrollbar */
+}
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+#chat-input {
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 6px;
+}
+#send-chat {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    background-color: var(--primary-blue);
+    color: white;
+    cursor: pointer;
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EchoSense - Profile</title>
+  <link rel="stylesheet" href="profile.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Welcome to EchoSense</h1>
+      <p id="user-welcome"></p>
+    </header>
+
+    <section id="profile-actions">
+      <button onclick="window.location.href='diary.html'">📝 Go to Diary & Chat</button>
+      <button onclick="window.location.href='mood-board.html'">📊 Mood Board</button>
+      <button id="logout-btn">🚪 Logout</button>
+    </section>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    const welcome = document.getElementById("user-welcome");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    if (!token) window.location.href = "login.html";
+
+    const username = localStorage.getItem("username");
+    welcome.textContent = `Hello, ${username || "User"}!`;
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>

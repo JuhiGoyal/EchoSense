@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EchoSense - Diary & Chat</title>
+    
+    <!-- === ICONS KE LIYE === -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- === DIARY CSS FILE KA LINK === -->
+    <link rel="stylesheet" href="diary.css" /> 
+</head>
+<body>
+
+    <!-- Main container for layout -->
+    <div class="container">
+    
+        <!-- Header -->
+        <header>
+            <h1>Diary & AI Chat</h1>
+            <div class="header-buttons">
+                <button id="view-mood-board">
+                    <i class="fas fa-chart-bar"></i> Mood Board
+                </button>
+                <button id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Notebook layout -->
+        <div class="notebook-container">
+        
+            <!-- Left Page: Diary Section -->
+            <section id="diary-section">
+                <h2>Today's Diary</h2>
+                <textarea id="diary-input" placeholder="Speak or type your thoughts..."></textarea>
+                <div class="controls">
+                    <button id="mic-diary">🎤</button>
+                    <button id="save-diary">Save</button>
+                </div>
+                <div id="diary-response"></div>
+            </section>
+
+            <!-- Right Page: Chat Section -->
+            <section id="chat-section">
+                <h2>AI Chat</h2>
+                <div id="chat-box"><!-- Chat messages will be dynamically added here --></div>
+                <div class="input-container">
+                    <input type="text" id="chat-input" placeholder="Type or speak to EchoSense..." />
+                    <button id="mic-chat">🎤</button>
+                    <button id="send-chat">Send</button>
+                </div>
+            </section>
+            
+        </div>
+    </div>
+    
+    <!-- All JS logic handled in scripts.js -->
+    <script src="scripts.js"></script>
+</body>
+</html>

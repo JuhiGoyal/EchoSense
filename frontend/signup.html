@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EchoSense - Sign Up</title>
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <a href="index.html" class="back-home-btn">
+      <i class="fas fa-arrow-left"></i> Home
+  </a>
+  <div class="container">
+    <header>
+      <h1>Create an Account</h1>
+    </header>
+
+    <section id="signup-section">
+      <input type="text" id="username" placeholder="Username" />
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="signup-btn">Sign Up</button>
+      <p>Already have an account? <a href="login.html">Login</a></p>
+      <p id="signup-msg"></p>
+    </section>
+  </div>
+
+  <script>
+    const signupBtn = document.getElementById("signup-btn");
+    const msg = document.getElementById("signup-msg");
+
+    signupBtn.addEventListener("click", async () => {
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!username || !email || !password) {
+        msg.textContent = "Please fill all fields.";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/signup", { // ✅ Corrected URL
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+
+        if (res.status === 200) {
+          // Store token & username (requires backend to return token after signup)
+          localStorage.setItem("token", data.access_token || "");
+          localStorage.setItem("username", data.username || username);
+          window.location.href = "diary.html";
+        } else {
+          msg.textContent = data.detail || "Signup failed!";
+        }
+      } catch (err) {
+        msg.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

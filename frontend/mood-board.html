@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EchoSense - Mood Board</title>
+  <link rel="stylesheet" href="mood.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>EchoSense Mood Board</h1>
+      <p>Visualize your emotional journey 💫</p>
+      <button id="logout-btn">Logout</button>
+    </header>
+
+    <section id="mood-summary" class="card">
+      <div class="controls">
+        <label for="period">Select Period:</label>
+        <select id="period">
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+        <button id="loadMood">Load</button>
+      </div>
+
+      <canvas id="moodChart"></canvas>
+      <div id="mood-text-summary" class="summary-card"></div>
+      <div id="mood-quote" class="quote-card"></div>
+    </section>
+
+    <button id="back-home">🏠 Back to Home</button>
+  </div>
+
+  <script src="mood-board.js"></script>
+</body>
+</html>

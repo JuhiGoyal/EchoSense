@@ -1,0 +1,168 @@
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
+
+/* --- Color Palette & Variables --- */
+:root {
+    --primary-blue: #3b82f6;
+    --primary-blue-hover: #2563eb;
+    --text-dark: #2d3748;
+    --text-light: #f9fafb;
+    --footer-bg: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+    --footer-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Basic Reset & Body Styling --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes header up, footer down */
+    color: var(--text-dark);
+    /* Replace with your final image file name */
+    background: url('background-illustration.png') no-repeat center center/cover;
+    background-attachment: fixed; /* Parallax effect */
+    overflow-x: hidden;
+}
+
+/* --- Header / Navigation --- */
+header {
+    width: 100%;
+    padding: 20px 50px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: flex-end; /* Pushes buttons to the right */
+    align-items: center;
+    z-index: 10;
+}
+
+.nav-buttons button {
+    font-family: 'Inter', sans-serif;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-buttons .signup-btn {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+.nav-buttons .signup-btn:hover {
+    background-color: var(--primary-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.nav-buttons .login-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.nav-buttons .login-btn:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* --- Main content placeholder --- */
+main {
+    flex-grow: 1; /* Takes up the space between header and footer */
+}
+
+/* --- Footer --- */
+footer {
+    width: 100%;
+    padding: 25px 50px;
+    background-color: var(--footer-bg);
+    box-shadow: var(--footer-shadow);
+    border-top: 1px solid #e5e7eb;
+    z-index: 10;
+}
+
+.author-box {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* For responsiveness */
+    gap: 20px;
+}
+
+.author-details {
+    text-align: left;
+}
+
+.author-details .name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.author-details .email {
+    font-size: 1rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.author-details .email:hover {
+    color: var(--primary-blue);
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.social-links a {
+    color: #4b5563;
+    font-size: 1.8rem; /* Icon size */
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--primary-blue);
+    transform: scale(1.1);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    header {
+        justify-content: center;
+        padding: 20px;
+    }
+    .author-box {
+        flex-direction: column;
+        text-align: center;
+    }
+    .author-details {
+        text-align: center;
+    }
+    footer {
+        padding: 20px;
+    }
+}
+
