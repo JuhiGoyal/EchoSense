@@ -56,6 +56,3 @@ urllib3==2.5.0
 uvicorn==0.37.0
 SpeechRecognition==3.10.4
 soundfile==0.12.1
-
-wave==0.0.2
-
