@@ -57,3 +57,4 @@ uvicorn
 SpeechRecognition
 soundfile
 standard-aifc
+python-multipart
