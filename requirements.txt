@@ -55,6 +55,7 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 uvicorn==0.37.0
 SpeechRecognition==3.10.4
-pyaudio==0.2.14
+soundfile==0.12.1
+
 wave==0.0.2
-audioop-lts==0.2.1
+
