@@ -8,6 +8,8 @@ from datetime import datetime
 
 router = APIRouter()
 
+from services.gemini_service import generate_ai_response
+
 @router.post("/diary", response_model=DiaryResponse)
 async def create_diary_entry(
     request: DiaryCreateRequest,
@@ -15,13 +17,20 @@ async def create_diary_entry(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Creates a new diary entry, runs sentiment analysis, and stores it in MongoDB.
+    Creates a new diary entry, runs sentiment analysis, gets AI response, and stores it in MongoDB.
     """
     sentiment = analyze_sentiment(request.content)
     
+    # Get AI response for the diary entry
+    try:
+        ai_reply = await generate_ai_response(request.content)
+    except Exception:
+        ai_reply = "I'm here for you. How can I support you today?"
+
     diary_entry = {
         "text": request.content,
         "sentiment": sentiment,
+        "gemini_response": ai_reply,
         "user_id": current_user["_id"],
         "timestamp": datetime.utcnow()
     }

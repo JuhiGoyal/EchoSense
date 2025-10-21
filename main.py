@@ -47,7 +47,11 @@ app.include_router(diary.router, prefix="/api", tags=["Diary"])
 
 @app.get("/")
 async def root():
-    return {"message": f"{settings.PROJECT_NAME} API is running with MongoDB!"}
+    return {
+        "message": f"Welcome to the {settings.PROJECT_NAME} API.",
+        "status": "Online",
+        "database": "Cloud MongoDB Atlas"
+    }
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

@@ -37,10 +37,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def decode_access_token(token: str) -> Optional[int]:
+def decode_access_token(token: str) -> Optional[str]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("user_id")
+        user_id: str = payload.get("user_id")
         if user_id is None:
             return None
         return user_id
