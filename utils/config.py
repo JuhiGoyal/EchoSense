@@ -14,10 +14,11 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
     
     # CORS
-    ALLOWED_ORIGINS: list = os.getenv(
+    _raw_origins = os.getenv(
         "ALLOWED_ORIGINS", 
         "http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000"
     ).split(",")
+    ALLOWED_ORIGINS: list = [o.strip().rstrip("/") for o in _raw_origins if o.strip()]
     
     # Database
     # Default MongoDB URL (local)
