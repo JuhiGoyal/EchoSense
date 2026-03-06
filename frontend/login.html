@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +8,10 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 </head>
+
 <body>
-    <a href="index.html" class="back-home-btn">
-      <i class="fas fa-arrow-left"></i> Home
+  <a href="index.html" class="back-home-btn">
+    <i class="fas fa-arrow-left"></i> Home
   </a>
   <div class="container">
     <header>
@@ -29,6 +31,10 @@
     const loginBtn = document.getElementById("login-btn");
     const msg = document.getElementById("login-msg");
 
+    const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+      ? "http://127.0.0.1:8001/api"
+      : "https://echosense-0j6p.onrender.com/api";
+
     loginBtn.addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -39,7 +45,7 @@
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/login", {  // ✅ Corrected URL
+        const res = await fetch(`${API_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
@@ -58,4 +64,5 @@
     });
   </script>
 </body>
+
 </html>
