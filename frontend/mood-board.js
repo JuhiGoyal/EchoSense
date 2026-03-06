@@ -1,4 +1,6 @@
-const API_URL = "http://127.0.0.1:8001/api";
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8001/api"
+    : "https://echosense-0j6p.onrender.com/api";
 const loadBtn = document.getElementById("loadMood");
 const periodSelect = document.getElementById("period");
 const moodText = document.getElementById("mood-text-summary");
@@ -61,9 +63,9 @@ async function loadMoodBoard() {
         });
 
         // Text summary
-        const totalHappy = happy.reduce((a,b)=>a+b,0);
-        const totalSad = sad.reduce((a,b)=>a+b,0);
-        const totalNeutral = neutral.reduce((a,b)=>a+b,0);
+        const totalHappy = happy.reduce((a, b) => a + b, 0);
+        const totalSad = sad.reduce((a, b) => a + b, 0);
+        const totalNeutral = neutral.reduce((a, b) => a + b, 0);
         let dominant = "😐 Neutral";
         if (totalHappy > totalSad && totalHappy > totalNeutral) dominant = "😊 Happy";
         else if (totalSad > totalHappy && totalSad > totalNeutral) dominant = "😢 Sad";
@@ -78,7 +80,7 @@ async function loadMoodBoard() {
         const quote = data.quote || "Keep going, your mood matters!";
         moodQuote.innerHTML = `<p>💬 Quote: "${quote}"</p>`;
 
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         alert("Error loading mood board.");
     }
@@ -87,8 +89,8 @@ async function loadMoodBoard() {
 // -----------------------------
 // Event Listeners
 // -----------------------------
-if(loadBtn) loadBtn.addEventListener("click", loadMoodBoard);
-if(backBtn) backBtn.addEventListener("click", () => window.location.href = "profile.html");
+if (loadBtn) loadBtn.addEventListener("click", loadMoodBoard);
+if (backBtn) backBtn.addEventListener("click", () => window.location.href = "profile.html");
 
 // Auto-load on page load
 window.addEventListener("load", loadMoodBoard);

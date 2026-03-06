@@ -1,6 +1,6 @@
 const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://127.0.0.1:8001/api"
-    : "/api";
+    : "https://echosense-0j6p.onrender.com/api";
 
 // -----------------------------
 // Check Login Token
