@@ -1,6 +1,6 @@
 annotated-types
 anyio
-bcrypt
+bcrypt==3.2.0
 certifi
 cffi
 charset-normalizer
@@ -58,3 +58,6 @@ SpeechRecognition
 soundfile
 standard-aifc
 python-multipart
+motor
+vaderSentiment
+google-generativeai

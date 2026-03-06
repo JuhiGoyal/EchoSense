@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/api";
+const API_URL = "http://127.0.0.1:8001/api";
 const loadBtn = document.getElementById("loadMood");
 const periodSelect = document.getElementById("period");
 const moodText = document.getElementById("mood-text-summary");

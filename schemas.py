@@ -1,66 +1,81 @@
 # backend/schemas.py
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, BeforeValidator
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Annotated
+
+# Helper to convert MongoDB ObjectId to string
+PyObjectId = Annotated[str, BeforeValidator(str)]
+
+class MongoBaseModel(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+
+    class Config:
+        populate_by_name = True
+        from_attributes = True
 
 # -----------------------------
 # User Schemas
 # -----------------------------
-class UserCreate(BaseModel):
+class UserBase(BaseModel):
     username: str
     email: EmailStr
+
+class UserCreate(UserBase):
     password: str
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class UserResponse(BaseModel):
-    id: int
-    username: str
-    email: EmailStr
+class UserResponse(UserBase, MongoBaseModel):
+    pass
 
-    class Config:
-        orm_mode = True
-
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserResponse
 
 # -----------------------------
-# Chat Schemas
+# Chat Schemas (End-to-End)
 # -----------------------------
+class ChatMessageRequest(BaseModel):
+    message: str
+
+class ChatMessageResponse(BaseModel):
+    response: str
+
 class ChatCreate(BaseModel):
     user_message: str
 
-class ChatResponse(BaseModel):
-    id: int
+class ChatResponse(MongoBaseModel):
     user_message: str
     bot_response: str
-    timestamp: datetime
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
     mood: Optional[str] = "neutral"
-
-    class Config:
-        orm_mode = True
-
 
 # -----------------------------
 # Diary Schemas
 # -----------------------------
+class DiaryCreateRequest(BaseModel):
+    content: str
+
 class DiaryCreate(BaseModel):
     text: str
 
-class DiaryResponse(BaseModel):
-    id: int
+class DiaryResponse(MongoBaseModel):
     text: str
     sentiment: str
-    gemini_response: Optional[str]
-    timestamp: datetime
-    user_id: int  # added
-
-    class Config:
-        orm_mode = True
+    gemini_response: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    user_id: PyObjectId
 
 class MoodSummary(BaseModel):
+    happy: int
+    sad: int
+    neutral: int
     period: str
-    summary: dict
+    summary: Dict[str, Dict[str, int]]
     dominant_mood: str
     quote: str
+    last_10_moods: List[str]
 

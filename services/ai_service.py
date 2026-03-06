@@ -1,67 +1,65 @@
 # services/ai_service.py
 import os
 import requests
-from dotenv import load_dotenv
 import random
+from dotenv import load_dotenv
 
-load_dotenv()
-
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+from utils.config import settings
 
 # -----------------------------
 # AI Response Service
 # -----------------------------
+GEMINI_API_KEY = settings.GEMINI_API_KEY
 def get_gemini_response(user_message: str, mood: str = "neutral", conversation_history: list = None) -> str:
     """
     Sends the user's message to the Gemini AI API and returns a bot response.
-    Handles missing API key safely and provides fallback.
-
-    Parameters:
-        user_message (str): Text input from user.
-        mood (str): Optional mood context (happy, sad, neutral).
-        conversation_history (list of str): Previous conversation messages.
-
-    Returns:
-        str: Bot response.
     """
-    # Prepare conversation context
-    context_text = f"User mood: {mood}"
+    # Construct prompt with context
+    context = f"The user is feeling {mood}."
     if conversation_history:
-        context_text += "\nPrevious conversation:\n" + "\n".join(conversation_history)
+        context += " Previous conversation:\n" + "\n".join(conversation_history)
+    
+    full_prompt = f"{context}\n\nUser: {user_message}\n\nAntigravity (AI assistant):"
 
     if not GEMINI_API_KEY:
-        # Fallback for dev if API key missing
         return f"[AI response unavailable] You said: {user_message}"
 
     try:
+        # Correct Gemini API URL (v1beta or v1)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+        
         payload = {
-            "prompt": user_message,
-            "context": context_text,
-            "max_tokens": 150
+            "contents": [
+                {
+                    "parts": [
+                        {"text": full_prompt}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "maxOutputTokens": 300,
+                "temperature": 0.7
+            }
         }
 
-        headers = {
-            "Authorization": f"Bearer {GEMINI_API_KEY}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Content-Type": "application/json"}
 
-        # Replace with actual Gemini API endpoint
-        GEMINI_API_URL = "https://gemini.example.com/v1/chat/completions"
-
-        response = requests.post(GEMINI_API_URL, json=payload, headers=headers, timeout=10)
+        response = requests.post(url, json=payload, headers=headers, timeout=15)
         response.raise_for_status()
 
         data = response.json()
-        bot_reply = data.get("choices", [{}])[0].get("text", "")
-        if not bot_reply:
-            bot_reply = "Sorry, I couldn't generate a response."
-
-        return bot_reply
+        # Extract response text based on Gemini API structure
+        candidates = data.get("candidates", [])
+        if candidates:
+            bot_reply = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+            return bot_reply.strip()
+        
+        return "I'm here to listen, but I'm having trouble thinking of what to say right now."
 
     except requests.exceptions.RequestException as e:
-        return f"[AI service error] Could not fetch response. ({str(e)})"
+        return f"[AI service error] I couldn't reach my brain. ({str(e)})"
     except Exception as e:
-        return f"[AI service error] Unexpected error: {str(e)}"
+        return f"[AI service error] Something went wrong: {str(e)}"
 
 
 # -----------------------------

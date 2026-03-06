@@ -1,36 +1,39 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from database import Base, engine
-from routers import chat, auth, voice  # include voice router
+from routers import chat, auth, voice, diary
 from starlette.middleware import Middleware
-# Create all tables (dev only)
-Base.metadata.create_all(bind=engine)
+from utils.config import settings
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    debug=settings.DEBUG
+)
+
+# -----------------------------
+# CORS Middleware
+# -----------------------------
 origins = [
-    "http://127.0.0.1:5500",  # your frontend URL
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5500",
     "http://localhost:5500"
 ]
-
-# app = FastAPI(title="EchoSense")
-middleware = [
-    Middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-]
-
-app = FastAPI(middleware=middleware)
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],          # Allow all origins
-#     allow_credentials=True,
-#     allow_methods=["*"],          # Allow all methods (GET, POST, etc.)
-#     allow_headers=["*"],          # Allow all headers
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # -----------------------------
 # Routers
@@ -38,22 +41,16 @@ app = FastAPI(middleware=middleware)
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
 app.include_router(voice.router, prefix="/api", tags=["Voice"])
+app.include_router(diary.router, prefix="/api", tags=["Diary"])
 
-# -----------------------------
-# Root
-# -----------------------------
 @app.get("/")
-def root():
-    return {"message": "EchoSense API is running!"}
+async def root():
+    return {"message": f"{settings.PROJECT_NAME} API is running with MongoDB!"}
 
-# -----------------------------
-# Global Exception Handler
-# -----------------------------
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    # Log error to console (useful for debugging)
-    print(f"Exception: {exc}")
+    logger.error(f"Global Exception: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
-        content={"message": f"Internal Server Error: {str(exc)}"},
+        content={"message": "Internal Server Error", "detail": str(exc)},
     )

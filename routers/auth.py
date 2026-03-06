@@ -1,17 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Depends, status
 from database import get_db
-from models import User
-from schemas import UserCreate, UserLogin, UserResponse
+from schemas import UserCreate, UserLogin, UserResponse, Token
 from utils.security import hash_password, verify_password, create_access_token
+from motor.motor_asyncio import AsyncIOMotorDatabase
 import re
+from datetime import datetime
 
 router = APIRouter()
 
-# -----------------------------
-# Password validation
-# -----------------------------
-def validate_password(password: str):
+def validate_password_strength(password: str):
     if len(password) < 8:
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
     if not re.search(r"[A-Z]", password):
@@ -21,58 +18,50 @@ def validate_password(password: str):
     if not re.search(r"\d", password):
         raise HTTPException(status_code=400, detail="Password must include a number")
 
-# -----------------------------
-# Signup
-# -----------------------------
-@router.post("/signup", response_model=UserResponse)
-def signup(user: UserCreate, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(
-        (User.email == user.email) | (User.username == user.username)
-    ).first()
-    if existing:
+@router.post("/signup", response_model=Token)
+async def signup(user: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
+    existing = await db["users"].find_one({
+        "$or": [{"email": user.email}, {"username": user.username}]
+    })
     
-        if existing.email == user.email:
+    if existing:
+        if existing["email"] == user.email:
             raise HTTPException(status_code=400, detail="Email already registered")
         else:
             raise HTTPException(status_code=400, detail="Username already taken")
 
-    validate_password(user.password)
+    validate_password_strength(user.password)
 
-    user_obj = User(
-        username=user.username,
-        email=user.email,
-        password_hash=hash_password(user.password),
-        
-    )
-    
-    db.add(user_obj)
-    db.commit()
-    db.refresh(user_obj)
-    token = create_access_token({"user_id": user_obj.id})
-    return  {
-        "access_token": token,
-        "token_type": "bearer",
-        "username": user_obj.username,
-        "user_id": user_obj.id,
-        "email": user_obj.email
+    user_dict = {
+        "username": user.username,
+        "email": user.email,
+        "password_hash": hash_password(user.password),
+        "created_at": datetime.utcnow()
     }
+    
+    result = await db["users"].insert_one(user_dict)
+    user_dict["_id"] = result.inserted_id
 
-# -----------------------------
-# Login
-# -----------------------------
-@router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if not db_user or not verify_password(user.password, db_user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token({"user_id": db_user.id})
+    token = create_access_token({"user_id": str(user_dict["_id"])})
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {
-            "id": db_user.id,
-            "username": db_user.username,
-            "email": db_user.email
-        }
+        "user": user_dict
+    }
+
+@router.post("/login", response_model=Token)
+async def login(user: UserLogin, db: AsyncIOMotorDatabase = Depends(get_db)):
+    db_user = await db["users"].find_one({"email": user.email})
+    if not db_user or not verify_password(user.password, db_user["password_hash"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    token = create_access_token({"user_id": str(db_user["_id"])})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": db_user
     }

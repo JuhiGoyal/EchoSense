@@ -1,4 +1,6 @@
-const API_URL = "https://echosense-2.onrender.com/api";
+const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8001/api"
+    : "/api";
 
 // -----------------------------
 // Check Login Token
@@ -73,35 +75,35 @@ const chatMic = document.getElementById("mic-chat");
 const sendChat = document.getElementById("send-chat");
 const chatBox = document.getElementById("chat-box");
 
-if(diaryMic) diaryMic.addEventListener("click", () => recordVoice(diaryMic, diaryInput));
-if(chatMic) chatMic.addEventListener("click", () => recordVoice(chatMic, chatInput));
+if (diaryMic) diaryMic.addEventListener("click", () => recordVoice(diaryMic, diaryInput));
+if (chatMic) chatMic.addEventListener("click", () => recordVoice(chatMic, chatInput));
 
 // -----------------------------
 // Diary Save + AI Response
 // -----------------------------
-if(saveDiary) saveDiary.addEventListener("click", async () => {
+if (saveDiary) saveDiary.addEventListener("click", async () => {
     const message = diaryInput.value.trim();
     if (!message) return;
 
     diaryResponseDiv.innerHTML = "<p>Saving diary and analyzing mood...</p>";
 
     try {
-        const res = await fetch(`${API_URL}/chat`, {
+        const res = await fetch(`${API_URL}/diary`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ user_message: message, diary: true })
+            body: JSON.stringify({ content: message })
         });
         const data = await res.json();
 
         diaryResponseDiv.innerHTML = `
-            <div class="chat-message diary-user">📝 You: ${data.user_message}</div>
-            <div class="chat-message diary-bot">🤖 EchoSense: ${data.bot_response}</div>
+            <div class="chat-message diary-user">📝 You: ${message}</div>
+            <div class="chat-message diary-bot">🤖 EchoSense: Entry saved with ${data.sentiment} sentiment.</div>
         `;
 
-        const mood = (data.mood || "neutral").toLowerCase();
+        const mood = (data.sentiment || "neutral").toLowerCase();
         let color = "#f5f5f5";
         if (mood === "happy") color = "#fff3b0";
         else if (mood === "sad") color = "#d0e1f9";
@@ -119,7 +121,7 @@ if(saveDiary) saveDiary.addEventListener("click", async () => {
 // -----------------------------
 // Chat System
 // -----------------------------
-if(sendChat) sendChat.addEventListener("click", async () => {
+if (sendChat) sendChat.addEventListener("click", async () => {
     const message = chatInput.value.trim();
     if (!message) return;
 
@@ -133,13 +135,13 @@ if(sendChat) sendChat.addEventListener("click", async () => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ user_message: message })
+            body: JSON.stringify({ message: message })
         });
 
         const data = await res.json();
-        chatBox.innerHTML += `<div class="chat-message bot">${data.bot_response}</div>`;
+        chatBox.innerHTML += `<div class="chat-message bot">${data.response}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
-    } catch(err) {
+    } catch (err) {
         console.error("Chat error:", err);
         chatBox.innerHTML += `<div class="chat-message bot" style="color:red;">Error: Could not reach server.</div>`;
     }
@@ -149,7 +151,7 @@ if(sendChat) sendChat.addEventListener("click", async () => {
 // Mood Board Navigation
 // -----------------------------
 const viewMoodBtn = document.getElementById("view-mood-board");
-if(viewMoodBtn) viewMoodBtn.addEventListener("click", () => {
+if (viewMoodBtn) viewMoodBtn.addEventListener("click", () => {
     window.location.href = "mood-board.html";
 });
 
@@ -162,7 +164,7 @@ const moodText = document.getElementById("mood-text-summary");
 let moodChart;
 
 async function loadMoodBoard() {
-    if(!loadBtn) return;
+    if (!loadBtn) return;
     const period = periodSelect.value;
 
     const res = await fetch(`${API_URL}/mood-board?period=${period}`, {
@@ -179,11 +181,13 @@ async function loadMoodBoard() {
     const ctx = document.getElementById("moodChart").getContext("2d");
     moodChart = new Chart(ctx, {
         type: "bar",
-        data: { labels, datasets: [
-            { label: "Happy 😊", data: happy, backgroundColor: "rgba(75,192,192,0.6)" },
-            { label: "Sad 😢", data: sad, backgroundColor: "rgba(255,99,132,0.6)" },
-            { label: "Neutral 😐", data: neutral, backgroundColor: "rgba(201,203,207,0.6)" }
-        ]},
+        data: {
+            labels, datasets: [
+                { label: "Happy 😊", data: happy, backgroundColor: "rgba(75,192,192,0.6)" },
+                { label: "Sad 😢", data: sad, backgroundColor: "rgba(255,99,132,0.6)" },
+                { label: "Neutral 😐", data: neutral, backgroundColor: "rgba(201,203,207,0.6)" }
+            ]
+        },
         options: {
             responsive: true,
             animation: { duration: 1200, easing: 'easeOutQuart' },
@@ -200,11 +204,11 @@ async function loadMoodBoard() {
     `;
 }
 
-if(loadBtn) loadBtn.addEventListener("click", loadMoodBoard);
+if (loadBtn) loadBtn.addEventListener("click", loadMoodBoard);
 window.addEventListener("load", loadMoodBoard);
 
 // -----------------------------
 // Back Button
 // -----------------------------
 const backBtn = document.getElementById("back-home");
-if(backBtn) backBtn.addEventListener("click", () => window.location.href = "profile.html");
+if (backBtn) backBtn.addEventListener("click", () => window.location.href = "profile.html");

@@ -1,14 +1,16 @@
 # Python / backend
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-env/
-venv/
-*.sqlite3
-*.db
+# Environments
+.env
 
-# IDE / editor
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# IDEs
 .vscode/
 .idea/
 
